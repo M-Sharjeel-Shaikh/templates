@@ -1,0 +1,14 @@
+version: '3.1'
+services:
+  odoo:
+    container_name: odoo-16-test
+    image: odoo:16.0
+    env_file: .env
+    ports:
+      - "8069:8069"
+    volumes:
+      - data:/var/lib/odoo
+      - ./config:/odoo.conf
+      - ./custom-addons:/mnt/extra-addons
+volumes:
+  data:

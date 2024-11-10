@@ -1,0 +1,41 @@
+// Install Postgres ubuntu
+sudo apt install postgresql postgresql-contrib
+sudo systemctl start postgresql
+sudo systemctl enable postgresql
+sudo systemctl status postgresql
+sudo -i -u postgres
+psql
+
+// Select Password for postgres user
+ALTER USER postgres PASSWORD 'your_password';
+\q
+
+// Create User for odoo and for Others
+CREATE USER your_new_username WITH PASSWORD 'your_password' SUPERUSER;
+
+// Verify New User Creation
+SELECT * FROM pg_user WHERE usename = 'your_new_username';
+
+
+// Create Database to check Access Right
+createdb -O odoo16 odoo16_db
+
+sudo systemctl status postgresql
+sudo systemctl start postgresql
+sudo nano /etc/postgresql/<version>/main/postgresql.conf
+listen_addresses = 'localhost'  # Allow connections from localhost
+listen_addresses = '*'
+sudo systemctl restart postgresql
+sudo nano /etc/postgresql/<version>/main/pg_hba.conf
+# IPv4 local connections:
+host    all             all             127.0.0.1/32            md5
+
+# IPv6 local connections:
+host    all             all             ::1/128                 md5
+sudo systemctl restart postgresql
+
+ss -lnpt | grep 5432
+psql -h localhost -p 5432 -U your_db_user -d your_db_name
+
+
+
