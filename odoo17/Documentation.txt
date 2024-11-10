@@ -1,0 +1,57 @@
+Reference
+https://www.cybrosys.com/blog/how-to-install-odoo-16-in-docker
+
+Configuring Postgres using docker-compose
+Create a ‘myenvfile.env’ file
+nano myenvfile.env
+
+#postgresql env variables
+POSTGRES_DB=postgres #name of the PostgreSQL db that will be created or used by the PostgreSQL server.
+POSTGRES_PASSWORD=odoo16 #db_user
+POSTGRES_USER=odoo16 #db_password
+PGDATA=/var/lib/pgsql/data/pgdata #storage location of DBs and data files of PSQL
+# odoo env variables
+HOST=postgres
+USER=odoo16
+PASSWORD=odoo16
+
+Create the docker-compose.yml file
+nano docker-compose.yml
+
+version: '3.1'
+services:
+  odoo:
+    image: odoo:16.0
+    env_file: myenvfile.env
+    depends_on:
+      - psql
+    ports:
+      - "8069:8069" #port mapping(custom-port:8069)
+    volumes:
+      - data:/var/lib/odoo
+      - ./config:/etc/odoo
+      - ./custom-addons:/mnt/extra-addons
+  psql:
+    image: postgres:13
+    env_file: myenvfile.env
+    volumes:
+      - db:/var/lib/pgsql/data/pgdata
+volumes:
+  data:
+  db:
+
+Create a custom configuration file in “./config”
+cd config
+nano odoo.conf
+
+[options]
+admin_passwd = strong_admin_password
+db_host = psql
+db_user = odoo16
+db_password = odoo16
+db_port = 5432
+addons_path = /mnt/extra-addons
+
+
+To start the Odoo instance, first, ensure the current directory is where the docker-compose.yml exists and run:
+docker-compose up
